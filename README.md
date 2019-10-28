@@ -12,23 +12,33 @@ Simply checking Deployment periodically by using Deployment Informer and Lister.
 When Deployment is deleted, it also deleted either.  
 HPA Templates were stored in ConfigMap that was mounted to `hpa-operator` as volume at `/template`
 ### Installing
-
-With RBAC
+HPA Template configmap
 ```bash
-kubectl create -f 
+kubectl create -f https://raw.githubusercontent.com/zduymz/hpa-operator/master/examples/hpatemplate.yaml
 ```
 
-Without RBAC
+HPA Operator with RBAC
 ```bash
-kubectl create -f 
+kubectl create -f https://raw.githubusercontent.com/zduymz/hpa-operator/master/examples/hpa-rbac.yaml
+```
+
+HPA Operator without RBAC
+```bash
+kubectl create -f  https://raw.githubusercontent.com/zduymz/hpa-operator/master/examples/hpa.yaml
 ```
 
 ### Testing
 Create nginx deployment
 ```bash
-kubectl create -f 
+kubectl create -f https://raw.githubusercontent.com/zduymz/hpa-operator/master/examples/nginx.yaml
 ```
-  
+
+Send requests
+```bash
+kubectl run -it load-generator --image=busybox /bin/sh
+
+while true; do wget -q -O- http://nginx-svc.default.svc.cluster.local; done
+```
 
 ### Build yourself
 You need to install golang > 1.12 and [dep]().  
