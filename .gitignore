@@ -1,0 +1,7 @@
+build/*
+vendor/*
+minikube.config
+staging.config
+hack/*
+.idea/*
+Godeps/*
