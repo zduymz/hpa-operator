@@ -2,14 +2,14 @@ package controller
 
 import (
 	"fmt"
-	"github.com/zduymz/hpa-operator/pkg/utils"
 	"io/ioutil"
-	"k8s.io/api/autoscaling/v2beta2"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/client-go/kubernetes"
-	"github.com/ghodss/yaml"
 	"strings"
 	"time"
+
+	"github.com/ghodss/yaml"
+	"github.com/zduymz/hpa-operator/pkg/utils"
+	"k8s.io/api/autoscaling/v2beta2"
+	"k8s.io/client-go/kubernetes"
 
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -193,10 +193,6 @@ func (c *Controller) createHPA(namespace, name string) error {
 		return nil
 	}
 
-	// TODO: this is stupid way to find APIGroup and Version
-	tmp := strings.SplitN(deploy.ObjectMeta.SelfLink, "/", 5)
-	gvk := schema.FromAPIVersionAndKind(tmp[2]+"/"+tmp[3], "Deployment")
-
 	hpa := &v2beta2.HorizontalPodAutoscaler{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "HorizontalPodAutoscaler",
@@ -205,14 +201,12 @@ func (c *Controller) createHPA(namespace, name string) error {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
 			Namespace: namespace,
-			OwnerReferences: []metav1.OwnerReference{
-				*metav1.NewControllerRef(deploy, gvk),
-			},
+			OwnerReferences: deploy.GetOwnerReferences(),
 		},
 		Spec: v2beta2.HorizontalPodAutoscalerSpec{
 			ScaleTargetRef: v2beta2.CrossVersionObjectReference{
-				APIVersion: gvk.GroupVersion().String(),
-				Kind:       gvk.Kind,
+				APIVersion: deploy.GroupVersionKind().GroupVersion().String(),
+				Kind:       deploy.GroupVersionKind().Kind,
 				Name:       name,
 			},
 			MinReplicas: &minReplicas,
@@ -221,7 +215,7 @@ func (c *Controller) createHPA(namespace, name string) error {
 		},
 	}
 
-	// check hpa is existed or not
+	// update if hpa existed
 	if c.isHPAExisted(namespace, name) {
 		_, err := c.kubeclientset.AutoscalingV2beta2().HorizontalPodAutoscalers(namespace).Update(hpa)
 		if err != nil {

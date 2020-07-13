@@ -1,18 +1,17 @@
 package main
 
 import (
+	"time"
+
 	"github.com/zduymz/hpa-operator/pkg/controller"
 	"github.com/zduymz/hpa-operator/pkg/signals"
 	"github.com/zduymz/hpa-operator/pkg/utils"
-	"time"
 
 	kubeinformers "k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/klog"
 )
-
-
 
 func main() {
 

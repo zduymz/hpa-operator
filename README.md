@@ -8,7 +8,7 @@ hpa.apixio.com/template -> name of hpa template you want to use
 ```
 
 ### How it work
-Simply checking Deployment periodically by using Deployment Informer and Lister. If deployment has the valid annotations, it will create or update HPA with the same name as Deployment Name.  
+Simply checking Deployment by using Deployment Informer and Lister. If deployment has the valid annotations, it will create or update HPA with the same name as Deployment Name.  
 When Deployment is deleted, it also deleted either.  
 HPA Templates were stored in ConfigMap that was mounted to `hpa-operator` as volume at `/template`
 ### Installing
@@ -41,10 +41,10 @@ while true; do wget -q -O- http://nginx-svc.default.svc.cluster.local; done
 ```
 
 ### Build yourself
-You need to install golang > 1.12 and [dep]().  
+You need to install golang > 1.12.  
 ```
 # Install requirements package
-dep ensure
+dep mod download
 # build on macos
 make macos
 # build on linux
